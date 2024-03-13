@@ -36,7 +36,7 @@ func (u *Users) FetchUserDB() (*sql.Row, error) {
 		return nil, fmt.Errorf(err.Error())
 	}
 	defer db.Close()
-	query := "SELECT username, password FROM users WHERE username = ? LIMIT 1;"
+	query := "SELECT name, lastname, username, password FROM users WHERE username = ? LIMIT 1;"
 	row := db.QueryRow(query, u.Username)
 	return row, nil
 }

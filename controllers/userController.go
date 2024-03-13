@@ -24,14 +24,14 @@ func LoginUser(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-
-	err := services.LoginUserService(u)
-	switch err != nil {
-
-	case err.Type == "db":
-		return c.JSON(http.StatusInternalServerError, map[string]string{"Message": "Error Interno"})
-	case err.Type == "user":
-		return c.JSON(http.StatusUnauthorized, map[string]string{"Message": "Usuario o contraseña incorrecta"})
+	var token string
+	if err := services.LoginUserService(u); err != nil {
+		return c.JSON(services.HandlerErrors(err))
 	}
-	return c.JSON(http.StatusOK, map[string]string{"Message": "Bienvenido Usuario"})
+	token, err := services.SignedLoginToken(u)
+	if err != nil {
+		return c.JSON(services.HandlerErrors(err))
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"Message": "Bienvenido Usuario", "token": token})
 }
