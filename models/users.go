@@ -36,7 +36,50 @@ func (u *Users) FetchUserDB() (*sql.Row, error) {
 		return nil, fmt.Errorf(err.Error())
 	}
 	defer db.Close()
-	query := "SELECT name, lastname, username, password FROM users WHERE username = ? LIMIT 1;"
+	query := "SELECT id, name, lastname, username, password FROM users WHERE username = ? LIMIT 1;"
 	row := db.QueryRow(query, u.Username)
 	return row, nil
+}
+
+func FetchUsersDB(id string) (*sql.Rows, error) {
+	db, err := config.Connection()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+
+	}
+	defer db.Close()
+	query := "SELECT username, name, lastname FROM users WHERE id = ?"
+	rows, err := db.Query(query, id)
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	return rows, nil
+}
+
+func DeleteUserDB(id string) error {
+	db, err := config.Connection()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer db.Close()
+	query := "DELETE FROM users WHERE id = ?"
+	_, err = db.Exec(query, id)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	return nil
+}
+
+func (u *Users) UpdateUserDB() error {
+	db, err := config.Connection()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer db.Close()
+	query := "UPDATE users SET name = ?, lastname = ?, username = ?, password = ? WHERE id = ?;"
+	_, err = db.Exec(query, u.Name, u.LastName, u.Username, u.Password, u.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

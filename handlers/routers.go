@@ -23,4 +23,7 @@ func RouterInit(e *echo.Echo) {
 	users.Use(middleware.CORSWithConfig(middleware.CORSConfig{AllowOrigins: []string{"*"}}))
 	users.POST("/register", controllers.RegisterUser)
 	users.POST("/login", controllers.LoginUser)
+	users.GET("/:id", controllers.GetAllUsers)
+	users.DELETE("/:id", controllers.DeleteUser)
+	users.PUT("/update", controllers.UpdateUser)
 }
