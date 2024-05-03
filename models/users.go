@@ -56,6 +56,18 @@ func FetchUsersDB(id string) (*sql.Rows, error) {
 	return rows, nil
 }
 
+func FetchUserDB(id string) (*sql.Row, error) {
+	db, err := config.Connection()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	defer db.Close()
+	query := "SELECT username, name, lastname, password FROM users WHERE id = ?"
+	row := db.QueryRow(query, id)
+	return row, nil
+
+}
+
 func DeleteUserDB(id string) error {
 	db, err := config.Connection()
 	if err != nil {

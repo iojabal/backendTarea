@@ -35,6 +35,17 @@ func LoginUserService(user *models.Users) *models.Error {
 
 }
 
+func FetchUser(id string, user *models.Users) *models.Error {
+	row, err := models.FetchUserDB(id)
+	if err := row.Scan(&user.Name, &user.LastName, &user.Username, &user.Password); err != nil {
+		return &models.Error{Error: err, Type: "db"}
+	}
+	if err != nil {
+		return &models.Error{Error: err, Type: "db"}
+	}
+	return nil
+}
+
 func FetchAllUsers(id string) (*sql.Rows, *models.Error) {
 	rows, err := models.FetchUsersDB(id)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"backend/services"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -72,20 +73,43 @@ func DeleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Usuario Eliminado"})
 }
 
+// func UpdateUser(c echo.Context) error {
+// 	u := new(models.Users)
+// 	if err := c.Bind(u); err != nil {
+// 		return err
+// 	}
+// 	token := c.Request().Header["Cookie"]
+// 	tokenString := strings.Split(token[0], "Bearer ")
+// 	tokenParts, err := services.VerifyToken(tokenString[1])
+// 	fmt.Println(tokenParts["id"])
+// 	if err != nil {
+// 		return c.JSON(services.HandlerErrors(err))
+// 	}
+// 	id := int(tokenParts["id"].(float64)) // Convert float64 to int
+// 	u.Id = id
+// 	u.UpdateUserDB()
+// 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Usuario Actualizado"})
+// }
+
 func UpdateUser(c echo.Context) error {
-	u := new(models.Users)
-	if err := c.Bind(u); err != nil {
-		return err
-	}
 	token := c.Request().Header["Cookie"]
 	tokenString := strings.Split(token[0], "Bearer ")
 	tokenParts, err := services.VerifyToken(tokenString[1])
-	fmt.Println(tokenParts["id"])
+	id := int(tokenParts["id"].(float64))
+
 	if err != nil {
 		return c.JSON(services.HandlerErrors(err))
 	}
-	id := int(tokenParts["id"].(float64)) // Convert float64 to int
-	u.Id = id
-	u.UpdateUserDB()
-	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Usuario Actualizado"})
+
+	u := new(models.Users)
+	user := &models.Users{}
+	if err := services.FetchUser(strconv.Itoa(id), user); err != nil {
+		return fmt.Errorf("error en algo")
+	}
+	fmt.Println(user)
+	if err := c.Bind(u); err != nil {
+		return fmt.Errorf("error en algo")
+	}
+	fmt.Print(u)
+	return nil
 }
